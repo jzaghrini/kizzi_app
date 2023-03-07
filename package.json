@@ -9,7 +9,6 @@
     "@types/react-dom": "^18.0.10",
     "@vitejs/plugin-react": "^3.1.0",
     "bootstrap": "^5.2.3",
-    "bootstrap-5-breakpoint-react-hook": "^1.1.0",
     "prettier": "^2.7.1",
     "react": "^18.0.2",
     "react-bootstrap": "^2.7.2",

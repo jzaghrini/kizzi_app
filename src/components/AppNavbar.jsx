@@ -1,14 +1,11 @@
 import './AppNavbar.css'
-import useBreakPoint from 'bootstrap-5-breakpoint-react-hook'
 import { Instagram, Envelope } from 'react-bootstrap-icons'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 
-const smallBreakpoints = ['xs', 'sm', 'md']
 export const AppNavbar = () => {
-  const breakpoint = useBreakPoint()
-  const isMobile = smallBreakpoints.includes(breakpoint)
+  const isMobile = false
   return (
     <Navbar bg="secondary" expand="lg">
       <Container>
