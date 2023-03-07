@@ -1,3 +1,8 @@
+
+$secondary: #fee5c8;
+
+@import '~bootstrap/scss/bootstrap';
+
 .App {
   text-align: center;
 }
@@ -14,7 +19,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #555555;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

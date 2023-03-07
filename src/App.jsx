@@ -1,9 +1,11 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.scss'
+import { AppNavbar } from './components/AppNavbar'
+import logo from './logo.svg'
 
 function App() {
   return (
     <div className="App">
+      <AppNavbar />
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -19,7 +21,7 @@ function App() {
         </a>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
