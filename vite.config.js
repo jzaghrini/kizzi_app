@@ -32,6 +32,6 @@ export default defineConfig({
         },
       },
     },
-    outDir: '../dist',
+    outDir: path.resolve(__dirname, 'dist'),
   },
 })
