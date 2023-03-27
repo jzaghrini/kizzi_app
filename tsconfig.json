@@ -1,0 +1,8 @@
+{
+  "lib": ["WebWorker"],
+  "compilerOptions": {
+    "target": "ESNext",
+    "types": ["vite/client"],
+    "allowSyntheticDefaultImports": true
+  }
+}
