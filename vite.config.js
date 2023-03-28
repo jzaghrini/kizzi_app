@@ -19,7 +19,6 @@ export default ({ mode }) => {
     build: {
       outDir: '../dist',
       rollupOptions: {
-        input: 'main.tsx',
         output: {
           assetFileNames: ({ name }) => {
             if (/\.(gif|jpe?g|png|svg)$/.test(name ?? '')) {
