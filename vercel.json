@@ -2,10 +2,5 @@
   "cleanUrls": true,
   "framework": "vite",
   "buildCommand": "vite build",
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  "redirects": []
 }
