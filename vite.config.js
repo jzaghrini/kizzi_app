@@ -4,7 +4,6 @@ import { defineConfig, loadEnv } from 'vite'
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
   return defineConfig({
-    root: './src',
     assetsInclude: ['**/*.svg'],
     plugins: [react()],
     appType: 'spa',
@@ -17,7 +16,6 @@ export default ({ mode }) => {
       strictPort: true,
     },
     build: {
-      outDir: '../dist',
       rollupOptions: {
         output: {
           assetFileNames: ({ name }) => {

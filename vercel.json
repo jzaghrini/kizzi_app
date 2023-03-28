@@ -2,5 +2,8 @@
   "cleanUrls": true,
   "framework": "vite",
   "buildCommand": "vite build",
-  "redirects": []
+  "redirects": [{
+    "source": "/dashboard",
+    "destination": "/index.html"
+  }]
 }
