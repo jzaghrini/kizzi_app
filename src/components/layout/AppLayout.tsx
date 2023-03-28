@@ -1,11 +1,13 @@
-import { localStorageKey } from '../../data-access'
+import { localStorageKey, useUserQuery } from '../../data-access'
 import { Layout, Menu, theme } from 'antd'
 import { useState } from 'react'
-import { Columns, BoxArrowLeft, People } from 'react-bootstrap-icons'
+import React from 'react'
+import { Columns, BoxArrowLeft, People, Mailbox } from 'react-bootstrap-icons'
 import { Outlet, useNavigate } from 'react-router-dom'
 
 const { Header, Footer, Sider, Content } = Layout
 export const AppLayout = () => {
+  const user = useUserQuery()
   const [collapsed, setCollapsed] = useState<boolean>(false)
   const {
     token: { colorBgContainer },
@@ -16,6 +18,23 @@ export const AppLayout = () => {
     navigate('/')
   }
 
+  let upperMenu = [
+    { key: 'dashboard', label: 'Dashboard', icon: <Columns /> },
+    {
+      key: 'availability',
+      label: 'Availability',
+      icon: <People />,
+      onClick: () => navigate('/availability'),
+    },
+  ]
+  if (user.data?.type === 'admin') {
+    upperMenu.push({
+      key: 'invites',
+      label: 'Invitations',
+      icon: <Mailbox />,
+      onClick: () => navigate('/invitation'),
+    })
+  }
   return (
     <Layout style={{ height: '100vh' }}>
       <Sider collapsed={collapsed} onCollapse={(v) => setCollapsed(v)}>
@@ -37,19 +56,7 @@ export const AppLayout = () => {
           }}
         >
           <div>
-            <Menu
-              theme="dark"
-              mode="inline"
-              items={[
-                { key: 'dashboard', label: 'Dashboard', icon: <Columns /> },
-                {
-                  key: 'availability',
-                  label: 'Availability',
-                  icon: <People />,
-                  onClick: () => navigate('/availability'),
-                },
-              ]}
-            />
+            <Menu theme="dark" mode="inline" items={upperMenu} />
           </div>
           <div style={{ marginTop: 'auto' }}>
             <Menu

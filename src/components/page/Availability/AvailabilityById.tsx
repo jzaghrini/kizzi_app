@@ -1,8 +1,8 @@
 import {
   useAvailabilityById,
   useAvailabilityBySlug,
-} from '../../../data-access/availability'
-import { useUserById } from '../../../data-access/user'
+  useUserById,
+} from '../../../data-access'
 import { Col, Row, Spin } from 'antd'
 import { addDays, differenceInDays } from 'date-fns'
 

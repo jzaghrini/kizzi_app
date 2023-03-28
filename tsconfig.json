@@ -2,6 +2,8 @@
   "lib": ["WebWorker"],
   "compilerOptions": {
     "target": "ESNext",
+    "moduleResolution": "Node",
+    "jsx": "react-jsx",
     "types": ["vite/client"],
     "allowSyntheticDefaultImports": true
   }

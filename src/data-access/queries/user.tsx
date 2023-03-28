@@ -1,5 +1,5 @@
-import { api } from './api'
-import { localStorageKey, UserResponse } from './types'
+import { api } from '../api'
+import { localStorageKey, UserResponse } from '../types'
 import { useQuery } from '@tanstack/react-query'
 
 const userBase = 'user'
