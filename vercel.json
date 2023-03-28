@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "framework": "vite",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
