@@ -14,10 +14,17 @@ import { localStorageKey } from './data-access'
 import React from 'react'
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 
+const PrivateRoute = () => {
+  const token = localStorage.getItem(localStorageKey)
+  if (token) return <Navigate to="/dashboard" />
+  return <Navigate to="/login" />
+}
+
 const appRoutes = [
   {
-    path: 'dashboard',
+    path: 'main',
     element: <Dashboard />,
+    index: true,
   },
   {
     path: 'error',
@@ -39,8 +46,9 @@ const appRoutes = [
   },
 ]
 const privateRoutes = [
+  { index: true, element: <PrivateRoute /> },
   {
-    path: '/',
+    path: '/dashboard',
     element: <AppLayout />,
     children: appRoutes,
   },

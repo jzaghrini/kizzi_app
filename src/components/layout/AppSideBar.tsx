@@ -6,8 +6,8 @@ import {
   Drawer,
   DrawerContent,
   DrawerOverlay,
-  Icon,
   useBreakpointValue,
+  useColorMode,
 } from '@chakra-ui/react'
 import { IconButton } from '@chakra-ui/react'
 import { Box, Flex, Divider, Spacer } from '@chakra-ui/react'
@@ -34,73 +34,9 @@ export interface AppSidebarLayoutProps extends BoxProps {
   children?: ReactNode
   overlap?: boolean
 }
-export const AppSidebarLayout = ({
-  overlap = false,
-  showCloseButton = true,
-  onClose,
-  children,
-  ...props
-}: AppSidebarLayoutProps) => {
-  const {
-    sidebar: { isOpen },
-  } = useAppContext()
-  const [isVisible, setIsVisible] = useState(isOpen)
-
-  useEffect(() => {
-    if (isOpen) {
-      setIsVisible(isOpen)
-    }
-  }, [isOpen])
-
-  return (
-    <Box
-      h="full"
-      w="full"
-      maxW="80"
-      borderTop="1px"
-      borderLeft="1px"
-      borderColor="gray.300"
-      bg="white"
-      overflowY="auto"
-      overflowX="hidden"
-      zIndex={20}
-      boxShadow="lg"
-      transform="auto"
-      transitionDuration="300ms"
-      transitionTimingFunction="ease-in-out"
-      translateX={isOpen ? 0 : '100%'}
-      pos={isOpen && !overlap ? 'relative' : 'absolute'}
-      right={0}
-      onTransitionEnd={() => {
-        if (!isOpen) {
-          setIsVisible(false)
-        }
-      }}
-      {...props}
-    >
-      {isVisible && (
-        <Flex direction="column" pos="relative" h="full">
-          {showCloseButton && (
-            <IconButton
-              colorScheme="white"
-              aria-label="Close sidebar"
-              icon={<Icon as={IoClose} fill="gray.300" />}
-              variant="ghost"
-              size="sm"
-              pos="absolute"
-              top={2}
-              right={2}
-              onClick={() => onClose?.()}
-            />
-          )}
-          {children}
-        </Flex>
-      )}
-    </Box>
-  )
-}
 
 const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
+  const { colorMode, toggleColorMode } = useColorMode()
   const { onLogout, user, isLoading } = useAppContext()
   const [isCollapsed, setCollapsed] = useState<boolean>(false)
   const openDrawer = () => setCollapsed(false)
@@ -134,7 +70,7 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
     >
       <Flex h="56px" pos="relative" shadow="sm">
         <Flex px="4" align="center" overflowX="hidden">
-          <MainLogo />
+          <MainLogo onClick={toggleColorMode} />
         </Flex>
         {showCollapse && (
           <IconButton
@@ -152,7 +88,7 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
             }
             aria-label="Expand sidebar"
             rounded="full"
-            opacity={0}
+            opacity="0"
             zIndex="sticky"
             _groupHover={{ opacity: 1 }}
             onClick={() =>
@@ -170,7 +106,7 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
         overflowY="auto"
       >
         <NavItemLink
-          to="/dashboard"
+          to="/dashboard/main"
           icon={BiSubdirectoryRight}
           full={full}
           isLoading={isLoading}
@@ -206,7 +142,7 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
         {/*  {t('generic:dashboard.manageAccounts')}*/}
         {/*</NavItemLink>*/}
         <NavItemLink
-          to="/accounts"
+          to="/dashboard/accounts"
           icon={MdAddLink}
           full={full}
           isLoading={isLoading}
@@ -215,7 +151,7 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
         </NavItemLink>
       </Flex>
       <Spacer />
-      <Flex direction="column" as="nav" fontSize="md" color="white">
+      <Flex direction="column" as="nav" fontSize="md">
         <Divider borderColor="brand.600" />
         <NavItemLink
           to="/dashboard/user"
@@ -229,7 +165,7 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
         <Divider borderColor="brand.600" />
         {isAdmin && (
           <NavItemLink
-            to="/admin"
+            to="/dashboard/admin"
             icon={IoSettingsOutline}
             iconMargin="1"
             full={full}
