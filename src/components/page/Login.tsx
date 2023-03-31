@@ -24,7 +24,7 @@ import { useForm } from 'react-hook-form'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 export const Login = () => {
-  const { colorMode, toggleColorMode } = useColorMode()
+  const { toggleColorMode } = useColorMode()
   const navigate = useNavigate()
   const { mutate, isLoading } = useTokenMutation()
   const {
@@ -56,7 +56,7 @@ export const Login = () => {
         display={{ base: 'none', md: 'flex' }}
         justifyContent="center"
       >
-        <Image src="assets/test-tube.png" />
+        <Image src="assets/images/test-tube.png" />
       </Flex>
       {/* Right */}
       <Box py={6} px={14} w="lg">
