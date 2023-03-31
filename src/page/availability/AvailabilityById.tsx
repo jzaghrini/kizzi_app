@@ -2,7 +2,7 @@ import {
   useAvailabilityById,
   useAvailabilityBySlug,
   useUserById,
-} from '../../../data-access'
+} from '../../data-access'
 import { addDays, differenceInDays } from 'date-fns'
 
 const availableDates = (startDate, endDate, excluded) => {

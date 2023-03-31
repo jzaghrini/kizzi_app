@@ -1,4 +1,4 @@
-import { MainContainer } from '../layout/MainContainer'
+import { MainContainer } from '../components/layout/MainContainer'
 import { VStack } from '@chakra-ui/react'
 
 export const Signup = () => {

@@ -1,10 +1,11 @@
+import { MainLogo } from '../../components/layout'
+import { MainContainer } from '../../components/layout/MainContainer'
 import {
   FormDataRequest,
   localStorageKey,
   useTokenMutation,
 } from '../../data-access'
-import { MainLogo } from '../layout'
-import { MainContainer } from '../layout/MainContainer'
+import TestTubeImage from './test-tube.png'
 import {
   Box,
   Button,
@@ -56,7 +57,7 @@ export const Login = () => {
         display={{ base: 'none', md: 'flex' }}
         justifyContent="center"
       >
-        <Image src="assets/images/test-tube.png" />
+        <Image src={TestTubeImage} />
       </Flex>
       {/* Right */}
       <Box py={6} px={14} w="lg">

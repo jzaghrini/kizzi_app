@@ -1,6 +1,6 @@
-import { useAppContext } from '../../../context'
-import { useAvailabilityQuery } from '../../../data-access'
-import { UpdateCreateInvitationModal } from '../../invite'
+import { UpdateCreateInvitationModal } from '../../components/invite'
+import { useAppContext } from '../../context'
+import { useAvailabilityQuery } from '../../data-access'
 import { Box, Button, Table } from '@chakra-ui/react'
 import { useState } from 'react'
 

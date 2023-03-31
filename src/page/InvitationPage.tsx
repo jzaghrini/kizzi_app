@@ -1,9 +1,9 @@
+import { UpdateCreateInvitationModal } from '../components/invite'
 import {
   useDeleteInvitation,
   useInvitationQuery,
   useUsersQuery,
-} from '../../data-access'
-import { UpdateCreateInvitationModal } from '../invite'
+} from '../data-access'
 import { DeleteOutlined } from '@ant-design/icons'
 import { Box, Button, Table, useDisclosure } from '@chakra-ui/react'
 import { format, parseISO } from 'date-fns'

@@ -32,7 +32,7 @@ export const AppLayout = () => {
 //   { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
 //   {
 //     key: 'availability',
-//     label: 'Availability',
+//     label: 'availability',
 //     icon: <UserOutlined />,
 //     onClick: () => navigate('/availability'),
 //   },

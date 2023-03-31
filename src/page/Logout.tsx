@@ -1,4 +1,4 @@
-import { localStorageKey } from '../../data-access'
+import { localStorageKey } from '../data-access'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 

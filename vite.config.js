@@ -4,7 +4,7 @@ import { defineConfig, loadEnv } from 'vite'
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
   return defineConfig({
-    assetsInclude: ['**/*.svg'],
+    assetsInclude: ['**/*.svg', '**/*.png'],
     plugins: [react()],
     appType: 'spa',
     server: {

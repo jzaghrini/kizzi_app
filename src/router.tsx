@@ -1,4 +1,5 @@
 import { AppLayout } from './components/layout'
+import { localStorageKey } from './data-access'
 import {
   Admin,
   Availability,
@@ -8,9 +9,8 @@ import {
   Login,
   Logout,
   ThrowErrorPage,
-} from './components/page'
-import { Dashboard } from './components/page/Dashboard'
-import { localStorageKey } from './data-access'
+} from './page'
+import { Dashboard } from './page/Dashboard'
 import React from 'react'
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 

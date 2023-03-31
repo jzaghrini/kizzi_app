@@ -1,4 +1,4 @@
-import { UserPage } from '../user'
+import { UserPage } from '../components/user'
 import {
   Box,
   Tab,
