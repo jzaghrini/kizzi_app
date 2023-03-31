@@ -17,7 +17,7 @@ export const AppLayout = () => {
           h="100vh"
           className="main-content-wrap"
         >
-          <Box as="main" flex="1" w="full">
+          <Box as="main" flex="1" w="full" overflowY="auto">
             <Flex direction="column" flexBasis="8" zIndex="1000">
               <AppNavbar />
             </Flex>

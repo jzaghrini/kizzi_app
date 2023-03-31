@@ -1,3 +1,4 @@
+import { TableContainerProps } from '@chakra-ui/react'
 import { ReactNode } from 'react'
 
 export interface ColumnDisplay<T> {
@@ -6,7 +7,7 @@ export interface ColumnDisplay<T> {
   dataKey?: string
   renderer?: (row: T) => ReactNode
 }
-export interface SmartTableProps<T> {
+export interface SmartTableProps<T> extends TableContainerProps {
   data?: Array<T & { id: string }>
   columns: Array<ColumnDisplay<T>>
 }

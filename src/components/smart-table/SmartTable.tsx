@@ -10,10 +10,14 @@ import {
 } from '@chakra-ui/react'
 import React from 'react'
 
-export const SmartTable = <T,>({ data, columns }: SmartTableProps<T>) => {
+export const SmartTable = <T,>({
+  data,
+  columns,
+  ...rest
+}: SmartTableProps<T>) => {
   return (
-    <TableContainer>
-      <Table colorScheme="brand">
+    <TableContainer {...rest}>
+      <Table colorScheme="gray">
         <Thead>
           <Tr>
             {columns.map((column, index) => (

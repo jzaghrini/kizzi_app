@@ -16,7 +16,7 @@ export const useUsersQuery = () =>
       api.get<Array<UserResponse>>('/user/').then(({ data }) => data),
     queryKey: [userBase, 'users'],
   })
-export const useUserById = (userId) =>
+export const useUserById = (userId?: string) =>
   useQuery({
     queryKey: [userBase, userId],
     queryFn: () => api.get(`/user/${userId}`).then(({ data }) => data),
