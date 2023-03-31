@@ -1,46 +1,43 @@
-import { useUserQuery, useAvailabilityQuery } from '../../../data-access'
+import { useAppContext } from '../../../context'
+import { useAvailabilityQuery } from '../../../data-access'
 import { UpdateCreateInvitationModal } from '../../invite'
-import { Button, Col, Row, Table } from 'antd'
+import { Box, Button, Table } from '@chakra-ui/react'
 import { useState } from 'react'
 
 export const PageView = () => {
   const [showModal, setShowModal] = useState<boolean>(false)
   const { data, isLoading } = useAvailabilityQuery()
-  const { data: userData } = useUserQuery()
+  const { user } = useAppContext()
   return (
     <div>
       <UpdateCreateInvitationModal
-        open={showModal}
+        isOpen={showModal}
         closeModal={() => setShowModal(false)}
       />
-      <Row
+      <Box
         className="user-header"
         style={{ display: 'flex', paddingBottom: 5 }}
       >
-        <Col>
+        <Box>
           <h3>Availability</h3>
-        </Col>
-        {userData?.type === 'admin' && (
-          <Col style={{ marginLeft: 'auto' }}>
-            <Button
-              key="send-invite"
-              type="primary"
-              onClick={() => setShowModal(true)}
-            >
+        </Box>
+        {user?.type === 'admin' && (
+          <Box style={{ marginLeft: 'auto' }}>
+            <Button key="send-invite" onClick={() => setShowModal(true)}>
               Create invite
             </Button>
-          </Col>
+          </Box>
         )}
-      </Row>
-      <Table
-        dataSource={data}
-        columns={[
-          { title: 'Slug', key: 'slug', dataIndex: 'slug' },
-          { title: 'From', dataIndex: 'fromDate' },
-          { title: 'To', dataIndex: 'toDate' },
-        ]}
-        loading={isLoading}
-      />
+      </Box>
+      {/*<Table*/}
+      {/*  dataSource={data}*/}
+      {/*  columns={[*/}
+      {/*    { title: 'Slug', key: 'slug', dataIndex: 'slug' },*/}
+      {/*    { title: 'From', dataIndex: 'fromDate' },*/}
+      {/*    { title: 'To', dataIndex: 'toDate' },*/}
+      {/*  ]}*/}
+      {/*  loading={isLoading}*/}
+      {/*/>*/}
     </div>
   )
 }

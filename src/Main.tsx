@@ -1,25 +1,27 @@
-import './App.scss'
 import router from './router'
+import theme from './theme'
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { App, ConfigProvider } from 'antd'
-import 'antd/dist/reset.css'
-import dayjs from 'dayjs'
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import React from 'react'
 import { RouterProvider } from 'react-router-dom'
 
-dayjs.extend(isSameOrBefore)
-
-const client = new QueryClient()
+const client = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      useErrorBoundary: true,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+})
 
 export const Main = () => (
   <React.StrictMode>
-    <QueryClientProvider client={client}>
-      <ConfigProvider>
-        <App>
-          <RouterProvider router={router} />
-        </App>
-      </ConfigProvider>
-    </QueryClientProvider>
+    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+    <ChakraProvider theme={theme}>
+      <QueryClientProvider client={client}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </ChakraProvider>
   </React.StrictMode>
 )

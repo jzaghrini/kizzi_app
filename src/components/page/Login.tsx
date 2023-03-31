@@ -1,69 +1,129 @@
-import { localStorageKey, useTokenMutation } from '../../data-access'
-import { FormDataRequest } from '../../data-access'
-import { Button, Form, Input } from 'antd'
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import {
+  FormDataRequest,
+  localStorageKey,
+  useTokenMutation,
+} from '../../data-access'
+import { MainLogo } from '../layout'
+import { MainContainer } from '../layout/MainContainer'
+import {
+  Box,
+  Button,
+  Divider,
+  Flex,
+  Heading,
+  HStack,
+  Image,
+  Input,
+  Link,
+  Stack,
+  Text,
+  useColorMode,
+} from '@chakra-ui/react'
+import React, { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 export const Login = () => {
-  const { mutate, isLoading } = useTokenMutation()
+  const { colorMode, toggleColorMode } = useColorMode()
   const navigate = useNavigate()
-  const onFinishFailed = (e) => console.log(e)
-  const onFinish = (values: FormDataRequest) =>
-    mutate(values, {
-      onSuccess: (data) => data && navigate('/dashboard'),
-      onError: (error) => console.log(error),
+  const { mutate, isLoading } = useTokenMutation()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataRequest>()
+  const onLogin = (data) => {
+    mutate(data, {
+      onSuccess: (token) => {
+        token && navigate('/')
+      },
     })
-
+  }
   useEffect(() => {
-    if (localStorage.getItem(localStorageKey)) {
-      navigate('/dashboard')
-    }
+    if (localStorage.getItem(localStorageKey)) navigate('/dashboard')
   }, [])
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-      }}
-    >
-      <div style={{ margin: 'auto' }}>
-        <h3>Kizzi</h3>
-        <Form
-          name="basic"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          style={{ maxWidth: 600 }}
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          autoComplete="off"
-        >
-          <Form.Item
-            label="Username"
-            name="username"
-            rules={[{ required: true, message: 'Please input your username!' }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
-          >
-            <Input.Password />
-          </Form.Item>
-
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit" loading={isLoading}>
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
-      </div>
-    </div>
+    <MainContainer>
+      {/* Left */}
+      <Flex
+        direction="column"
+        bgColor="brand.100"
+        py={20}
+        roundedLeft="base"
+        minW="xs"
+        w="sm"
+        display={{ base: 'none', md: 'flex' }}
+        justifyContent="center"
+      >
+        <Image src="assets/test-tube.png" />
+      </Flex>
+      {/* Right */}
+      <Box py={6} px={14} w="lg">
+        <Flex h="full" direction="column">
+          <MainLogo onClick={toggleColorMode} />
+          <Heading textAlign="center" pb={8}>
+            Sign in to Kizzi
+          </Heading>
+          <Box maxW="md" w="full" alignSelf="center">
+            <form onSubmit={handleSubmit(onLogin)}>
+              <Stack direction="column" spacing={4}>
+                <Input
+                  {...register('username', { required: true })}
+                  autoComplete="username"
+                  placeholder="Your email"
+                  isInvalid={!!errors?.username}
+                  variant="flushed"
+                  colorScheme="green"
+                />
+                <Input
+                  {...register('password', { required: true })}
+                  autoComplete="current-password"
+                  type="password"
+                  placeholder="Your password"
+                  isInvalid={!!errors?.password}
+                  variant="flushed"
+                />
+                <HStack spacing={2} py={2} width="full">
+                  <Box width="100%">
+                    <Button
+                      type="submit"
+                      colorScheme="green"
+                      isLoading={isLoading}
+                      w="full"
+                    >
+                      Login
+                    </Button>
+                  </Box>
+                </HStack>
+              </Stack>
+            </form>
+          </Box>
+        </Flex>
+      </Box>
+    </MainContainer>
   )
 }
+
+const Additional = () => (
+  <>
+    <Flex align="center">
+      <Divider />
+      <Text px={10}>or</Text>
+      <Divider />
+    </Flex>
+    <Flex direction="column">
+      <Text align="center" fontSize="sm" color="gray.600" my={6}>
+        <Link as={RouterLink} to="/forgot">
+          Forgot your password?
+        </Link>
+      </Text>
+    </Flex>
+    <Text align="center" fontSize="sm" color="gray.600" my={6}>
+      New here?&nbsp;
+      <Link as={RouterLink} to="/create-account">
+        Create an account
+      </Link>
+    </Text>
+  </>
+)

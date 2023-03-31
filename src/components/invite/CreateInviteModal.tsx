@@ -7,17 +7,15 @@ import { InvitationData, RowInterface } from './types'
 import { DeleteOutlined } from '@ant-design/icons'
 import {
   Button,
-  DatePicker,
-  Form,
+  FormControl,
+  FormLabel,
+  HStack,
   Input,
   Modal,
-  Space,
-  TimePicker,
   Tooltip,
-  Transfer,
-} from 'antd'
-import { addHours, startOfHour } from 'date-fns'
-import dayjs from 'dayjs'
+  VStack,
+} from '@chakra-ui/react'
+import { addHours, parseISO, setHours, setMinutes, startOfHour } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 const UserSelect = ({
@@ -28,26 +26,27 @@ const UserSelect = ({
   onChange: (userIds: Array<string>) => void
 }) => {
   const { data, isLoading } = useUsersQuery()
-  return (
-    <Transfer
-      dataSource={(data ?? []).map((x) => ({
-        key: x.id,
-        title: x.email ?? x.phoneNumber,
-        chosen: targetKeys.includes(x.id),
-      }))}
-      targetKeys={targetKeys}
-      disabled={isLoading}
-      onChange={(targetKeys) => {
-        onChange(targetKeys)
-      }}
-      oneWay
-      render={(item) => item.title}
-    />
-  )
+  return null
+  // return (
+  //   <Transfer
+  //     dataSource={(data ?? []).map((x) => ({
+  //       key: x.id,
+  //       title: x.email ?? x.phoneNumber,
+  //       chosen: targetKeys.includes(x.id),
+  //     }))}
+  //     targetKeys={targetKeys}
+  //     disabled={isLoading}
+  //     onChange={(targetKeys) => {
+  //       onChange(targetKeys)
+  //     }}
+  //     oneWay
+  //     render={(item) => item.title}
+  //   />
+  // )
 }
 
-const setHourAndMinute = (date: dayjs.Dayjs, existing: dayjs.Dayjs) =>
-  date.set('hour', existing.hour()).set('minute', existing.minute())
+const setHourAndMinute = (date: Date, existing: Date): Date =>
+  setMinutes(setHours(date, existing.getHours()), existing.getMinutes())
 const AvailabilityOptionRow = ({
   data,
   index,
@@ -61,42 +60,36 @@ const AvailabilityOptionRow = ({
 }) => {
   const today = new Date()
   return (
-    <Space style={{ paddingBottom: 20, display: 'flex' }} size="large">
-      <Space direction="vertical" size="small">
-        <Space.Compact block>
-          <DatePicker
-            value={data.fromDate}
-            onChange={(date) => {
-              updateRow(index, {
-                ...data,
-                fromDate: setHourAndMinute(date, data.fromDate),
-                toDate: setHourAndMinute(date, data.toDate),
-              })
-            }}
-            disabledDate={(d) => !d || d.isSameOrBefore(today.toISOString())}
-          />
-          <TimePicker.RangePicker
-            value={[data.fromDate, data.toDate]}
-            minuteStep={5}
-            format="HH:mm"
-            onChange={(time) => {
-              const [fromDate, toDate] = time
-              updateRow(index, { ...data, fromDate: fromDate, toDate: toDate })
-            }}
-          />
-        </Space.Compact>
+    <VStack style={{ paddingBottom: 20, display: 'flex' }}>
+      <HStack>
+        {/*<DatePicker*/}
+        {/*  value={data.fromDate}*/}
+        {/*  onChange={(date) => {*/}
+        {/*    updateRow(index, {*/}
+        {/*      ...data,*/}
+        {/*      fromDate: setHourAndMinute(date, data.fromDate),*/}
+        {/*      toDate: setHourAndMinute(date, data.toDate),*/}
+        {/*    })*/}
+        {/*  }}*/}
+        {/*  disabledDate={(d) => !d || d.isSameOrBefore(today.toISOString())}*/}
+        {/*/>*/}
+        {/*<RangePicker*/}
+        {/*  value={[data.fromDate, data.toDate]}*/}
+        {/*  minuteStep={5}*/}
+        {/*  format="HH:mm"*/}
+        {/*  onChange={(time) => {*/}
+        {/*    const [fromDate, toDate] = time*/}
+        {/*    updateRow(index, { ...data, fromDate: fromDate, toDate: toDate })*/}
+        {/*  }}*/}
+        {/*/>*/}
         <Input placeholder="Location" />
-      </Space>
+      </HStack>
       <Tooltip title="Delete">
-        <Button
-          danger
-          type="text"
-          shape="circle"
-          icon={<DeleteOutlined />}
-          onClick={() => removeRow(index)}
-        />
+        <Button onClick={() => removeRow(index)}>
+          <DeleteOutlined />
+        </Button>
       </Tooltip>
-    </Space>
+    </VStack>
   )
 }
 const InviteForm = ({
@@ -113,11 +106,13 @@ const InviteForm = ({
   updateRow: (index: number, data: RowInterface) => void
 }) => {
   return (
-    <Form layout="vertical">
-      <Form.Item label="Select Users">
+    <form>
+      <FormControl>
+        <FormLabel>Select Users:</FormLabel>
         <UserSelect targetKeys={data.userIds} onChange={updateUserIds} />
-      </Form.Item>
-      <Form.Item label="Availability Options">
+      </FormControl>
+      <FormControl>
+        <FormLabel>Availability Options</FormLabel>
         {data.options.map((row, index) => (
           <AvailabilityOptionRow
             key={`ao-${index}`}
@@ -127,30 +122,27 @@ const InviteForm = ({
             removeRow={removeRow}
           />
         ))}
-      </Form.Item>
+      </FormControl>
       <Button onClick={addRow}>Add</Button>
-    </Form>
+    </form>
   )
 }
 
-const findNextDay = (
-  today: dayjs.Dayjs,
-  rows: Array<RowInterface>
-): dayjs.Dayjs => {
+const findNextDay = (today: Date, rows: Array<RowInterface>): Date => {
   const existingDays = rows.map((x) => x.fromDate.toISOString())
   let currentDate = today
   while (existingDays.includes(currentDate.toISOString())) {
-    currentDate = currentDate.add(1, 'hour')
+    currentDate = addHours(currentDate, 1)
   }
   return currentDate
 }
 export const UpdateCreateInvitationModal = ({
   inviteId,
-  open,
+  isOpen,
   closeModal,
 }: {
   inviteId?: string
-  open: boolean
+  isOpen: boolean
   closeModal: () => void
 }) => {
   const { data, isFetched } = useInvitationByIdQuery(inviteId)
@@ -160,7 +152,7 @@ export const UpdateCreateInvitationModal = ({
     options: [],
   })
 
-  const today: dayjs.Dayjs = dayjs(addHours(startOfHour(new Date()), 1))
+  const today: Date = addHours(startOfHour(new Date()), 1)
   const resetForm = () => setInviteData({ userIds: [], options: [] })
   useEffect(() => {
     if (data && isFetched) {
@@ -168,30 +160,27 @@ export const UpdateCreateInvitationModal = ({
         ...data,
         options: data.options.map((x) => ({
           ...x,
-          fromDate: dayjs(x.fromDate),
-          toDate: dayjs(x.toDate),
+          fromDate: parseISO(x.fromDate),
+          toDate: parseISO(x.toDate),
         })),
       })
     }
   }, [])
   return (
     <Modal
-      title="Create invitation"
-      open={open}
-      onOk={() => {
-        mutate(inviteData, {
-          onSuccess: () => {
-            resetForm()
-            closeModal()
-          },
-        })
-      }}
-      okText="Save"
-      confirmLoading={isLoading}
-      onCancel={() => {
+      isOpen={isOpen}
+      onClose={() => {
         resetForm()
         closeModal()
       }}
+      // onOk={() => {
+      //   mutate(inviteData, {
+      //     onSuccess: () => {
+      //       resetForm()
+      //       closeModal()
+      //     },
+      //   })
+      // }}
     >
       <InviteForm
         data={inviteData}
@@ -207,7 +196,7 @@ export const UpdateCreateInvitationModal = ({
             ...inviteData,
             options: [
               ...inviteData.options,
-              { fromDate: nextDay, toDate: nextDay.add(1, 'hour') },
+              { fromDate: nextDay, toDate: addHours(nextDay, 1) },
             ],
           })
         }}

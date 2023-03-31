@@ -1,8 +1,6 @@
-import dayjs from 'dayjs'
-
 export interface RowInterface {
-  fromDate: dayjs.Dayjs
-  toDate: dayjs.Dayjs
+  fromDate: Date
+  toDate: Date
 }
 
 export interface InvitationData {

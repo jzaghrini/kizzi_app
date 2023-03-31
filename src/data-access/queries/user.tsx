@@ -1,13 +1,13 @@
 import { api } from '../api'
-import { localStorageKey, UserResponse } from '../types'
-import { useQuery } from '@tanstack/react-query'
+import { UserResponse } from '../types'
+import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 
 const userBase = 'user'
-export const useUserQuery = () =>
+export const useUserQuery = (options: UseQueryOptions<UserResponse>) =>
   useQuery({
+    ...options,
     queryFn: () => api.get<UserResponse>('/user/me').then(({ data }) => data),
     queryKey: [userBase, 'me'],
-    enabled: !!localStorage.getItem(localStorageKey),
   })
 
 export const useUsersQuery = () =>

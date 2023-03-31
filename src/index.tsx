@@ -1,6 +1,5 @@
 import { Main } from './Main'
 import reportWebVitals from './reportWebVitals'
-import './scss/styles.scss'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
