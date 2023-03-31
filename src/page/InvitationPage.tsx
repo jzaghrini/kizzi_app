@@ -4,7 +4,6 @@ import {
   useInvitationQuery,
   useUsersQuery,
 } from '../data-access'
-import { DeleteOutlined } from '@ant-design/icons'
 import { Box, Button, Table, useDisclosure } from '@chakra-ui/react'
 import { format, parseISO } from 'date-fns'
 import React, { useState } from 'react'

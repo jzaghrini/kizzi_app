@@ -4,7 +4,6 @@ import {
   useUsersQuery,
 } from '../../data-access'
 import { InvitationData, RowInterface } from './types'
-import { DeleteOutlined } from '@ant-design/icons'
 import {
   Button,
   FormControl,
@@ -17,6 +16,7 @@ import {
 } from '@chakra-ui/react'
 import { addHours, parseISO, setHours, setMinutes, startOfHour } from 'date-fns'
 import { useEffect, useState } from 'react'
+import { AiOutlineDelete } from 'react-icons/ai'
 
 const UserSelect = ({
   targetKeys,
@@ -86,7 +86,7 @@ const AvailabilityOptionRow = ({
       </HStack>
       <Tooltip title="Delete">
         <Button onClick={() => removeRow(index)}>
-          <DeleteOutlined />
+          <AiOutlineDelete />
         </Button>
       </Tooltip>
     </VStack>
