@@ -2,6 +2,8 @@ import {
   useUpdateUserMutation,
   useUserById,
   useCreateUserMutation,
+  CreateUserRequest,
+  UpdateUserRequest,
 } from '../../data-access'
 import {
   Box,
@@ -18,6 +20,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   VStack,
 } from '@chakra-ui/react'
 import React from 'react'
@@ -29,12 +32,6 @@ interface UserModelProps {
   onClose: () => void
 }
 
-interface CreateUserRequest {
-  id?: string
-  name: string
-  email?: string
-  phoneNumber?: string
-}
 interface UserFormProps {
   userId?: string
   title: string
@@ -57,7 +54,6 @@ const UserForm = ({
     useCreateUserMutation()
   const { mutate: updateMutate, isLoading: isUpdating } =
     useUpdateUserMutation(userId)
-  const mutate = userId ? updateMutate : createMutate
   const isSaving = isCreating || isUpdating
   const {
     handleSubmit,
@@ -68,19 +64,21 @@ const UserForm = ({
   } = useForm<CreateUserRequest>({
     defaultValues: defaultValues,
   })
-  const onSubmit = (data: CreateUserRequest) => {
-    mutate(replaceObjectWithNull(data) as CreateUserRequest, {
-      onSuccess: () => {
-        onClose()
-      },
-    })
-  }
-  const fields = watch(['email', 'phoneNumber'])
-  const isDisabled = fields.every((x) => x === '')
+
   const onClose = () => {
     reset()
     closeModal()
   }
+  const onSubmit = (data: CreateUserRequest) => {
+    const submitData = replaceObjectWithNull(data)
+    if (userId) {
+      updateMutate(submitData as UpdateUserRequest, { onSuccess: onClose })
+      return
+    }
+    createMutate(submitData as CreateUserRequest, { onSuccess: onClose })
+  }
+  const fields = watch(['email', 'phoneNumber'])
+  const isDisabled = fields.every((x) => x === '')
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <ModalHeader>{title}</ModalHeader>
@@ -138,21 +136,28 @@ const UserForm = ({
 export const UserModal = ({ userId, isOpen, onClose }: UserModelProps) => {
   const { data, isLoading } = useUserById(userId)
   const title = userId ? 'Update user' : 'Create User'
+  const defaultValues = userId
+    ? data
+    : {
+        name: '',
+        email: null,
+        phoneNumber: null,
+      }
+  console.log(data)
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <UserForm
-          userId={userId}
-          title={title}
-          defaultValues={{
-            id: userId,
-            name: '',
-            email: null,
-            phoneNumber: null,
-          }}
-          closeModal={onClose}
-        />
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <UserForm
+            userId={userId}
+            title={title}
+            defaultValues={defaultValues}
+            closeModal={onClose}
+          />
+        )}
       </ModalContent>
     </Modal>
   )

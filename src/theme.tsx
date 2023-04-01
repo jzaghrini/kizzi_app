@@ -1,4 +1,5 @@
 import {
+  Button,
   extendTheme,
   ThemeConfig,
   withDefaultColorScheme,
@@ -26,6 +27,6 @@ const colors = {
 }
 const theme = extendTheme(
   { config, colors },
-  withDefaultColorScheme({ colorScheme: 'messenger' })
+  withDefaultColorScheme({ colorScheme: 'gray' })
 )
 export default theme

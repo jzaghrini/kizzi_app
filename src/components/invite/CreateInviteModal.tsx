@@ -5,17 +5,24 @@ import {
 } from '../../data-access'
 import { InvitationData, RowInterface } from './types'
 import {
+  Box,
   Button,
+  ButtonGroup,
   FormControl,
   FormLabel,
   HStack,
   Input,
   Modal,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Tooltip,
   VStack,
 } from '@chakra-ui/react'
 import { addHours, parseISO, setHours, setMinutes, startOfHour } from 'date-fns'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { AiOutlineDelete } from 'react-icons/ai'
 
 const UserSelect = ({
@@ -106,9 +113,9 @@ const InviteForm = ({
   updateRow: (index: number, data: RowInterface) => void
 }) => {
   return (
-    <form>
+    <Box p="5">
       <FormControl>
-        <FormLabel>Select Users:</FormLabel>
+        <FormLabel>Select Communities</FormLabel>
         <UserSelect targetKeys={data.userIds} onChange={updateUserIds} />
       </FormControl>
       <FormControl>
@@ -124,7 +131,7 @@ const InviteForm = ({
         ))}
       </FormControl>
       <Button onClick={addRow}>Add</Button>
-    </form>
+    </Box>
   )
 }
 
@@ -166,52 +173,60 @@ export const UpdateCreateInvitationModal = ({
       })
     }
   }, [])
+  const title = inviteId ? 'Update Invite' : 'Create Invite'
+  let onClose = () => {
+    resetForm()
+    closeModal()
+  }
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={() => {
-        resetForm()
-        closeModal()
-      }}
-      // onOk={() => {
-      //   mutate(inviteData, {
-      //     onSuccess: () => {
-      //       resetForm()
-      //       closeModal()
-      //     },
-      //   })
-      // }}
-    >
-      <InviteForm
-        data={inviteData}
-        updateUserIds={(userIds) =>
-          setInviteData({
-            ...inviteData,
-            userIds: userIds,
-          })
-        }
-        addRow={() => {
-          const nextDay = findNextDay(today, inviteData.options)
-          setInviteData({
-            ...inviteData,
-            options: [
-              ...inviteData.options,
-              { fromDate: nextDay, toDate: addHours(nextDay, 1) },
-            ],
-          })
-        }}
-        updateRow={(index, data) => {
-          const newData = { ...inviteData }
-          newData.options[index] = data
-          setInviteData(newData)
-        }}
-        removeRow={(index: number) =>
-          setInviteData({
-            ...inviteData,
-            options: inviteData.options.filter((x, i) => i !== index),
-          })
-        }
-      />
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <form>
+          <ModalCloseButton />
+          <ModalHeader>{title}</ModalHeader>
+          <InviteForm
+            data={inviteData}
+            updateUserIds={(userIds) =>
+              setInviteData({
+                ...inviteData,
+                userIds: userIds,
+              })
+            }
+            addRow={() => {
+              const nextDay = findNextDay(today, inviteData.options)
+              setInviteData({
+                ...inviteData,
+                options: [
+                  ...inviteData.options,
+                  { fromDate: nextDay, toDate: addHours(nextDay, 1) },
+                ],
+              })
+            }}
+            updateRow={(index, data) => {
+              const newData = { ...inviteData }
+              newData.options[index] = data
+              setInviteData(newData)
+            }}
+            removeRow={(index: number) =>
+              setInviteData({
+                ...inviteData,
+                options: inviteData.options.filter((x, i) => i !== index),
+              })
+            }
+          />
+          <ModalFooter>
+            <ButtonGroup>
+              <Button onClick={onClose} variant="ghost">
+                Close
+              </Button>
+              <Button colorScheme="green" variant="ghost">
+                Save
+              </Button>
+            </ButtonGroup>
+          </ModalFooter>
+        </form>
+      </ModalContent>
     </Modal>
   )
 }

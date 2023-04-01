@@ -1,5 +1,7 @@
 import { SmartTableProps } from './types'
 import {
+  Center,
+  Spinner,
   Table,
   TableContainer,
   Tbody,
@@ -13,11 +15,19 @@ import React from 'react'
 export const SmartTable = <T,>({
   data,
   columns,
+  tableProps,
+  isLoading,
   ...rest
 }: SmartTableProps<T>) => {
+  if (isLoading)
+    return (
+      <Center height={500} w="full">
+        <Spinner />
+      </Center>
+    )
   return (
     <TableContainer {...rest}>
-      <Table colorScheme="gray">
+      <Table colorScheme="gray" {...tableProps}>
         <Thead>
           <Tr>
             {columns.map((column, index) => (
@@ -32,7 +42,7 @@ export const SmartTable = <T,>({
                 const dataKey = col.dataKey ?? col.key
                 return (
                   <Td key={`${row.id}-${col.key}`}>
-                    {col.renderer ? col.renderer(row) : row[dataKey]}
+                    {col.render ? col.render(row[dataKey], row) : row[dataKey]}
                   </Td>
                 )
               })}

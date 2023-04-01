@@ -1,4 +1,4 @@
-import { localStorageKey, UserResponse, useUserQuery } from '../data-access'
+import { localStorageKey, UserDate, useUserQuery } from '../data-access'
 import { UseDisclosureReturn } from '@chakra-ui/hooks/dist/use-disclosure'
 import { useDisclosure } from '@chakra-ui/react'
 import { AxiosError, isAxiosError } from 'axios'
@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 interface IAppContext {
   isLoggedIn: () => boolean
   onLogout: () => void
-  user?: UserResponse
+  user?: UserDate
   isLoading: boolean
   sidebar: UseDisclosureReturn
 }
@@ -37,7 +37,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
       value={{
         isLoggedIn: () => !!token,
         onLogout,
-        user: data,
+        user: data as UserDate,
         isLoading,
         sidebar: sideBar,
       }}

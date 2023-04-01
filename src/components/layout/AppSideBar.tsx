@@ -3,40 +3,51 @@ import { MainLogo } from './MainLogo'
 import { NavItem, NavItemLink } from './nav'
 import type { BoxProps } from '@chakra-ui/react'
 import {
+  Box,
+  Divider,
   Drawer,
   DrawerContent,
   DrawerOverlay,
+  Flex,
+  IconButton,
+  Spacer,
   useBreakpointValue,
   useColorMode,
 } from '@chakra-ui/react'
-import { IconButton } from '@chakra-ui/react'
-import { Box, Flex, Divider, Spacer } from '@chakra-ui/react'
-import { ReactNode, useEffect, useState } from 'react'
-import { BiSubdirectoryRight } from 'react-icons/bi'
+import { useEffect, useState } from 'react'
 import {
-  IoPersonCircleOutline,
-  IoLogOutOutline,
-  IoChevronForward,
+  BiSubdirectoryLeft,
+  BiCategory,
+  BiMailSend,
+  BiWrench,
+  BiLeftArrowAlt,
+  BiGroup,
+} from 'react-icons/bi'
+import {
   IoChevronBack,
-  IoClose,
-  IoSettingsOutline,
+  IoChevronForward,
+  IoPersonCircleOutline,
 } from 'react-icons/io5'
-import { MdAddLink } from 'react-icons/md'
-import { useLocation } from 'react-router-dom'
+import { useLocation, Location } from 'react-router-dom'
 
 export interface DashboardSidebarProps extends BoxProps {
   full?: boolean
 }
 
-export interface AppSidebarLayoutProps extends BoxProps {
-  showCloseButton?: boolean
-  onClose?: () => void
-  children?: ReactNode
-  overlap?: boolean
+const getUpperMenu = (location: Location) => {
+  const adminPaths = ['admin', 'invitation', 'users']
+  if (adminPaths.some((x) => location.pathname.includes(x)))
+    return [
+      { to: '/dashboard', display: 'Back', icon: BiSubdirectoryLeft },
+      { to: '/invitation', display: 'Invites', icon: BiMailSend },
+      { to: '/users', display: 'Users', icon: BiGroup },
+    ]
+  return [{ to: '/dashboard', display: 'Dashboard', icon: BiCategory }]
 }
 
 const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
-  const { colorMode, toggleColorMode } = useColorMode()
+  const location = useLocation()
+  const { toggleColorMode } = useColorMode()
   const { onLogout, user, isLoading } = useAppContext()
   const [isCollapsed, setCollapsed] = useState<boolean>(false)
   const openDrawer = () => setCollapsed(false)
@@ -52,8 +63,21 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
     { base: !full, lg: false },
     { ssr: false }
   )
-  const isAdmin = user?.type === 'admin'
-
+  let lowerMenu = [
+    {
+      to: '/user',
+      display: user?.name ?? user?.email ?? 'My Account',
+      icon: IoPersonCircleOutline,
+    },
+  ]
+  if (user?.type === 'admin') {
+    lowerMenu.push({
+      to: '/admin',
+      display: 'Admin',
+      icon: BiWrench,
+    })
+  }
+  let upperMenu = getUpperMenu(location)
   return (
     <Box
       as="nav"
@@ -105,14 +129,11 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
         aria-label="Main Navigation"
         overflowY="auto"
       >
-        <NavItemLink
-          to="/dashboard/main"
-          icon={BiSubdirectoryRight}
-          full={full}
-          isLoading={isLoading}
-        >
-          Pricing
-        </NavItemLink>
+        {upperMenu.map(({ to, icon, display }) => (
+          <NavItemLink to={to} icon={icon} full={full} isLoading={isLoading}>
+            {display}
+          </NavItemLink>
+        ))}
       </Flex>
       <Divider borderColor="brand.600" />
       <Flex
@@ -141,40 +162,23 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
         {/*>*/}
         {/*  {t('generic:dashboard.manageAccounts')}*/}
         {/*</NavItemLink>*/}
-        <NavItemLink
-          to="/dashboard/accounts"
-          icon={MdAddLink}
-          full={full}
-          isLoading={isLoading}
-        >
-          Link Account
-        </NavItemLink>
       </Flex>
       <Spacer />
       <Flex direction="column" as="nav" fontSize="md">
         <Divider borderColor="brand.600" />
-        <NavItemLink
-          to="/dashboard/user"
-          icon={IoPersonCircleOutline}
-          iconMargin="1"
-          full={full}
-          isLoading={isLoading}
-        >
-          {user?.name ?? user?.email ?? 'My account'}
-        </NavItemLink>
-        <Divider borderColor="brand.600" />
-        {isAdmin && (
+        {lowerMenu.map(({ to, icon, display }) => (
           <NavItemLink
-            to="/dashboard/admin"
-            icon={IoSettingsOutline}
+            to={to}
+            icon={icon}
             iconMargin="1"
             full={full}
             isLoading={isLoading}
           >
-            Admin
+            {display}
           </NavItemLink>
-        )}
-        <NavItem icon={IoLogOutOutline} full={full} onClick={onLogout}>
+        ))}
+        <Divider borderColor="brand.600" />
+        <NavItem icon={BiLeftArrowAlt} full={full} onClick={onLogout}>
           Logout
         </NavItem>
       </Flex>

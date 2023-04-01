@@ -1,4 +1,5 @@
 import { AppLayout } from './components/layout'
+import { UserPage } from './components/user'
 import { localStorageKey } from './data-access'
 import {
   Admin,
@@ -9,8 +10,8 @@ import {
   Login,
   Logout,
   ThrowErrorPage,
-} from './page'
-import { Dashboard } from './page/Dashboard'
+  Dashboard,
+} from './pages'
 import React from 'react'
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 
@@ -22,7 +23,7 @@ const PrivateRoute = () => {
 
 const appRoutes = [
   {
-    path: 'main',
+    path: 'dashboard',
     element: <Dashboard />,
     index: true,
   },
@@ -40,6 +41,7 @@ const appRoutes = [
     path: 'invitation',
     element: <InvitationPage />,
   },
+  { path: 'users', element: <UserPage /> },
   {
     path: 'admin',
     element: <Admin />,
@@ -48,7 +50,7 @@ const appRoutes = [
 const privateRoutes = [
   { index: true, element: <PrivateRoute /> },
   {
-    path: '/dashboard',
+    path: '/',
     element: <AppLayout />,
     children: appRoutes,
   },

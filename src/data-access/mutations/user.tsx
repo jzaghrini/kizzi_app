@@ -1,14 +1,7 @@
 import { api } from '../api'
-import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query'
+import { CreateUserRequest, UpdateUserRequest } from './types'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-interface CreateUserRequest {
-  name: string
-  email?: string
-  phoneNumber?: string
-}
-interface UpdateUserRequest extends Partial<CreateUserRequest> {
-  id?: string
-}
 export const useCreateUserMutation = () => {
   const queryClient = useQueryClient()
   return useMutation({
@@ -21,6 +14,14 @@ export const useUpdateUserMutation = (userId?: string) => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: UpdateUserRequest) => api.put(`/user/${userId}`, data),
+    onSuccess: (data) =>
+      queryClient.invalidateQueries(['user']).then(() => data),
+  })
+}
+export const useDeleteUserMutation = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (userId: string) => api.delete(`/user/${userId}`),
     onSuccess: (data) =>
       queryClient.invalidateQueries(['user']).then(() => data),
   })
