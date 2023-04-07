@@ -1,5 +1,6 @@
 import { api } from '../api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { parseISO } from 'date-fns'
 import dayjs from 'dayjs'
 
 interface CreateInvitationRequest {
@@ -19,10 +20,23 @@ export const useCreateInvitationMutation = () => {
         ...data,
         options: data.options.map((x) => ({
           ...x,
-          fromDate: x.fromDate.toISOString(),
-          toDate: x.toDate.toISOString(),
+          fromDate: parseISO(x.fromDate).toISOString(),
+          toDate: parseISO(x.toDate).toISOString(),
         })),
       }),
+    onSuccess: (data) =>
+      queryClient.invalidateQueries([invitationKey]).then(() => data),
+  })
+}
+interface UpdateInviteRequest {
+  id: string
+  status: 'sent'
+}
+export const useUpdateInvitation = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, ...data }: UpdateInviteRequest) =>
+      api.put(`/invitation/${id}`, data),
     onSuccess: (data) =>
       queryClient.invalidateQueries([invitationKey]).then(() => data),
   })

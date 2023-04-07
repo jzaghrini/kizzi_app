@@ -1,4 +1,5 @@
 import { AppLayout } from './components/layout'
+import { TopicsPage } from './components/topics'
 import { UserPage } from './components/user'
 import { localStorageKey } from './data-access'
 import {
@@ -42,6 +43,7 @@ const appRoutes = [
     element: <InvitationPage />,
   },
   { path: 'users', element: <UserPage /> },
+  { path: 'topics', element: <TopicsPage /> },
   {
     path: 'admin',
     element: <Admin />,

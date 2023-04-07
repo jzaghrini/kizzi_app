@@ -1,70 +1,31 @@
-import {
-  useCommunityQuery,
-  useDeleteUserMutation,
-  useUsersQuery,
-} from '../../data-access'
+import { useDeleteTopicMutation, useTopicsQuery } from '../../data-access'
 import { SmartTable } from '../smart-table'
-import { UserModal } from './UserModal'
+import { TopicModal } from './TopicModal'
 import {
-  Badge,
   Box,
   Button,
   ButtonGroup,
-  Center,
   Flex,
   IconButton,
   Spacer,
   Text,
   useDisclosure,
 } from '@chakra-ui/react'
-import { format } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
-import { BiTrash, BiEdit } from 'react-icons/bi'
+import { BiEdit, BiTrash } from 'react-icons/bi'
 
-export const UserPage = () => {
-  const communityQuery = useCommunityQuery()
-  const { data, isLoading } = useUsersQuery()
-  const { mutate, isLoading: isDeleting } = useDeleteUserMutation()
+export const TopicsPage = () => {
+  const { data, isLoading } = useTopicsQuery()
+  const { mutate, isLoading: isDeleting } = useDeleteTopicMutation()
   const { isOpen, onClose, onOpen } = useDisclosure({ defaultIsOpen: false })
-  const [userId, setUserId] = useState<string | null>(null)
-  const records = (data ?? []).map((x) => ({
-    ...x,
-    communities: x.communityIds.map((c) =>
-      communityQuery.data?.find((y) => y.id === c)
-    ),
-  }))
+  const [topicId, setTopicId] = useState<string | null>(null)
 
   const columns = [
     { key: 'name', display: 'Name' },
-    { key: 'email', display: 'Email' },
-    { key: 'phoneNumber', display: 'Phone Number' },
-    {
-      key: 'deletedAt',
-      display: 'Deleted',
-      render: (deletedAt) =>
-        deletedAt ? (
-          <Badge colorScheme="red">{format(deletedAt, 'PP HH:mm')}</Badge>
-        ) : null,
-    },
-    {
-      key: 'type',
-      display: 'Type',
-      render: (type) => (
-        <Badge colorScheme={type === 'admin' ? 'red' : 'green'}>{type}</Badge>
-      ),
-    },
-    {
-      key: 'communities',
-      display: 'Communities',
-      render: (communities) => (
-        <Center>
-          {communities.map((x) => (
-            <Badge key={x.id}>{x.name}</Badge>
-          ))}
-        </Center>
-      ),
-    },
+    { key: 'keyword', display: 'Keyword' },
+    { key: 'topicText', display: 'Text' },
+    { key: 'disabled', display: 'Disabled' },
     {
       key: 'actions',
       display: '',
@@ -75,7 +36,7 @@ export const UserPage = () => {
             aria-label="edit-user"
             variant="ghost"
             disabled={isDeleting}
-            onClick={() => setUserId(row.id)}
+            onClick={() => setTopicId(row.id)}
             icon={<BiEdit />}
           />
           {!row.deleted && (
@@ -96,22 +57,22 @@ export const UserPage = () => {
   ]
 
   useEffect(() => {
-    if (userId) onOpen()
-  }, [userId, onOpen])
+    if (topicId) onOpen()
+  }, [topicId, onOpen])
 
   return (
     <Box h="full" w="full" p="5">
-      <UserModal
-        userId={userId}
+      <TopicModal
+        topicId={topicId}
         isOpen={isOpen}
         onClose={() => {
-          setUserId(null)
+          setTopicId(null)
           onClose()
         }}
       />
       <Flex pb="5">
-        <Text as="h3" fontWeight="bold" fontSize="lg">
-          Users
+        <Text fontWeight="bold" fontSize="lg">
+          Topics
         </Text>
         <Spacer />
         <Button
@@ -120,11 +81,11 @@ export const UserPage = () => {
           colorScheme="gray"
           leftIcon={<AiOutlinePlus />}
         >
-          Create User
+          Create Topic
         </Button>
       </Flex>
       <SmartTable
-        data={records}
+        data={data}
         columns={columns}
         sx={{ height: 'full', overflowY: 'scroll' }}
         isLoading={isLoading}

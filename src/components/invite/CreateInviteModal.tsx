@@ -1,7 +1,10 @@
 import {
   useCreateInvitationMutation,
   useInvitationByIdQuery,
-  useUsersQuery,
+  useCommunityQuery,
+  useTopicsQuery,
+  TopicResponse,
+  CreateTopicRequest,
 } from '../../data-access'
 import { InvitationData, RowInterface } from './types'
 import {
@@ -18,38 +21,59 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Tooltip,
+  Select,
+  Spinner,
+  Switch,
   VStack,
 } from '@chakra-ui/react'
-import { addHours, parseISO, setHours, setMinutes, startOfHour } from 'date-fns'
+import {
+  addHours,
+  format,
+  isValid,
+  parseISO,
+  setHours,
+  setMinutes,
+  startOfHour,
+} from 'date-fns'
 import React, { useEffect, useState } from 'react'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { AiOutlineDelete } from 'react-icons/ai'
 
-const UserSelect = ({
+const CommunitySelect = ({
   targetKeys,
   onChange,
 }: {
   targetKeys: Array<string>
   onChange: (userIds: Array<string>) => void
 }) => {
-  const { data, isLoading } = useUsersQuery()
-  return null
-  // return (
-  //   <Transfer
-  //     dataSource={(data ?? []).map((x) => ({
-  //       key: x.id,
-  //       title: x.email ?? x.phoneNumber,
-  //       chosen: targetKeys.includes(x.id),
-  //     }))}
-  //     targetKeys={targetKeys}
-  //     disabled={isLoading}
-  //     onChange={(targetKeys) => {
-  //       onChange(targetKeys)
-  //     }}
-  //     oneWay
-  //     render={(item) => item.title}
-  //   />
-  // )
+  const { data, isLoading } = useCommunityQuery()
+  return (
+    <Box height={200}>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <div>
+          {(data ?? []).map((row) => (
+            <FormControl id={row.id} key={row.id}>
+              <Switch
+                size="sm"
+                isChecked={targetKeys.includes(row.id)}
+                onChange={(e) => {
+                  let keys = [...targetKeys, row.id]
+                  if (targetKeys.includes(row.id)) {
+                    keys = targetKeys.filter((x) => x !== row.id)
+                  }
+                  onChange(keys)
+                }}
+              >
+                {row.name}
+              </Switch>
+            </FormControl>
+          ))}
+        </div>
+      )}
+    </Box>
+  )
 }
 
 const setHourAndMinute = (date: Date, existing: Date): Date =>
@@ -59,64 +83,104 @@ const AvailabilityOptionRow = ({
   index,
   updateRow,
   removeRow,
+  topics,
 }: {
   index: number
   data: RowInterface
   updateRow: (index: number, data: RowInterface) => void
   removeRow: (index: number) => void
+  topics: Array<TopicResponse>
 }) => {
+  const { register } = useFormContext()
   const today = new Date()
   return (
-    <VStack style={{ paddingBottom: 20, display: 'flex' }}>
-      <HStack>
-        {/*<DatePicker*/}
-        {/*  value={data.fromDate}*/}
-        {/*  onChange={(date) => {*/}
-        {/*    updateRow(index, {*/}
-        {/*      ...data,*/}
-        {/*      fromDate: setHourAndMinute(date, data.fromDate),*/}
-        {/*      toDate: setHourAndMinute(date, data.toDate),*/}
-        {/*    })*/}
-        {/*  }}*/}
-        {/*  disabledDate={(d) => !d || d.isSameOrBefore(today.toISOString())}*/}
-        {/*/>*/}
-        {/*<RangePicker*/}
-        {/*  value={[data.fromDate, data.toDate]}*/}
-        {/*  minuteStep={5}*/}
-        {/*  format="HH:mm"*/}
-        {/*  onChange={(time) => {*/}
-        {/*    const [fromDate, toDate] = time*/}
-        {/*    updateRow(index, { ...data, fromDate: fromDate, toDate: toDate })*/}
-        {/*  }}*/}
-        {/*/>*/}
-        <Input placeholder="Location" />
-      </HStack>
-      <Tooltip title="Delete">
-        <Button onClick={() => removeRow(index)}>
-          <AiOutlineDelete />
-        </Button>
-      </Tooltip>
-    </VStack>
+    <HStack>
+      <VStack style={{ paddingBottom: 20, display: 'flex' }}>
+        <HStack w="full" spacing="2">
+          <FormControl id="fromDate">
+            <Input
+              {...register(`options.${index}.fromDate`, {
+                onChange: (e) => {
+                  const value = parseISO(e.target.value)
+                  if (isValid(value)) return format(value, 'yyyy-MM-ddTHH:mm')
+                  return value
+                },
+              })}
+              placeholder="Start date"
+            />
+          </FormControl>
+          <FormControl id="fromDate">
+            <Input
+              {...register(`options.${index}.toDate`)}
+              placeholder="End date"
+            />
+          </FormControl>
+          {/*<DatePicker*/}
+          {/*  value={data.fromDate}*/}
+          {/*  onChange={(date) => {*/}
+          {/*    updateRow(index, {*/}
+          {/*      ...data,*/}
+          {/*      fromDate: setHourAndMinute(date, data.fromDate),*/}
+          {/*      toDate: setHourAndMinute(date, data.toDate),*/}
+          {/*    })*/}
+          {/*  }}*/}
+          {/*  disabledDate={(d) => !d || d.isSameOrBefore(today.toISOString())}*/}
+          {/*/>*/}
+          {/*<RangePicker*/}
+          {/*  value={[data.fromDate, data.toDate]}*/}
+          {/*  minuteStep={5}*/}
+          {/*  format="HH:mm"*/}
+          {/*  onChange={(time) => {*/}
+          {/*    const [fromDate, toDate] = time*/}
+          {/*    updateRow(index, { ...data, fromDate: fromDate, toDate: toDate })*/}
+          {/*  }}*/}
+          {/*/>*/}
+        </HStack>
+        <HStack w="full" spacing="2">
+          <Input placeholder="Location" w="full" />
+          {topics.length && (
+            <Select onChange={(e) => e.target.value} w="full">
+              {topics.map((topic) => (
+                <option value={topic.id} key={topic.id}>
+                  {topic.name}
+                </option>
+              ))}
+            </Select>
+          )}
+        </HStack>
+      </VStack>
+      <Button
+        onClick={() => removeRow(index)}
+        variant="ghost"
+        colorScheme="red"
+      >
+        <AiOutlineDelete />
+      </Button>
+    </HStack>
   )
 }
 const InviteForm = ({
   data,
-  updateUserIds,
+  updateInviteData,
   addRow,
   updateRow,
   removeRow,
 }: {
   data: InvitationData
-  updateUserIds: (userIds: Array<string>) => void
+  updateInviteData: (userIds: Array<string>) => void
   addRow: () => void
   removeRow: (index: number) => void
   updateRow: (index: number, data: RowInterface) => void
 }) => {
+  const { data: topics } = useTopicsQuery()
   return (
     <Box p="5">
       <FormControl>
         <FormLabel>Select Communities</FormLabel>
-        <UserSelect targetKeys={data.userIds} onChange={updateUserIds} />
+        <CommunitySelect
+          targetKeys={data.communityIds}
+          onChange={updateInviteData}
+        />
       </FormControl>
       <FormControl>
         <FormLabel>Availability Options</FormLabel>
@@ -127,6 +191,7 @@ const InviteForm = ({
             index={index}
             updateRow={updateRow}
             removeRow={removeRow}
+            topics={topics ?? []}
           />
         ))}
       </FormControl>
@@ -152,15 +217,18 @@ export const UpdateCreateInvitationModal = ({
   isOpen: boolean
   closeModal: () => void
 }) => {
+  const form = useForm()
   const { data, isFetched } = useInvitationByIdQuery(inviteId)
   const { mutate, isLoading } = useCreateInvitationMutation()
   const [inviteData, setInviteData] = useState<InvitationData>({
+    communityIds: [],
     userIds: [],
     options: [],
   })
 
   const today: Date = addHours(startOfHour(new Date()), 1)
-  const resetForm = () => setInviteData({ userIds: [], options: [] })
+  const resetForm = () =>
+    setInviteData({ userIds: [], options: [], communityIds: [] })
   useEffect(() => {
     if (data && isFetched) {
       setInviteData({
@@ -178,54 +246,65 @@ export const UpdateCreateInvitationModal = ({
     resetForm()
     closeModal()
   }
+
+  const onSubmit = (values) =>
+    mutate({ ...inviteData, ...values }, { onSuccess: onClose })
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <form>
-          <ModalCloseButton />
-          <ModalHeader>{title}</ModalHeader>
-          <InviteForm
-            data={inviteData}
-            updateUserIds={(userIds) =>
-              setInviteData({
-                ...inviteData,
-                userIds: userIds,
-              })
-            }
-            addRow={() => {
-              const nextDay = findNextDay(today, inviteData.options)
-              setInviteData({
-                ...inviteData,
-                options: [
-                  ...inviteData.options,
-                  { fromDate: nextDay, toDate: addHours(nextDay, 1) },
-                ],
-              })
-            }}
-            updateRow={(index, data) => {
-              const newData = { ...inviteData }
-              newData.options[index] = data
-              setInviteData(newData)
-            }}
-            removeRow={(index: number) =>
-              setInviteData({
-                ...inviteData,
-                options: inviteData.options.filter((x, i) => i !== index),
-              })
-            }
-          />
-          <ModalFooter>
-            <ButtonGroup>
-              <Button onClick={onClose} variant="ghost">
-                Close
-              </Button>
-              <Button colorScheme="green" variant="ghost">
-                Save
-              </Button>
-            </ButtonGroup>
-          </ModalFooter>
-        </form>
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <ModalCloseButton />
+            <ModalHeader>{title}</ModalHeader>
+            <InviteForm
+              data={inviteData}
+              updateInviteData={(communityIds) =>
+                setInviteData({
+                  ...inviteData,
+                  communityIds,
+                })
+              }
+              addRow={() => {
+                const nextDay = findNextDay(today, inviteData.options)
+                setInviteData({
+                  ...inviteData,
+                  options: [
+                    ...inviteData.options,
+                    { fromDate: nextDay, toDate: addHours(nextDay, 1) },
+                  ],
+                })
+              }}
+              updateRow={(index, data) => {
+                const newData = { ...inviteData }
+                newData.options[index] = data
+                setInviteData(newData)
+              }}
+              removeRow={(index: number) =>
+                setInviteData({
+                  ...inviteData,
+                  options: inviteData.options.filter((x, i) => i !== index),
+                })
+              }
+            />
+            <ModalFooter>
+              <ButtonGroup>
+                <Button onClick={onClose} variant="ghost">
+                  Close
+                </Button>
+                <Button
+                  type="submit"
+                  colorScheme="green"
+                  variant="ghost"
+                  isLoading={isLoading}
+                >
+                  Save
+                </Button>
+              </ButtonGroup>
+            </ModalFooter>
+          </form>
+        </FormProvider>
       </ModalContent>
     </Modal>
   )

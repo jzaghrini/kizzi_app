@@ -12,8 +12,9 @@ export interface UserResponse {
   id: string
   name: string | null
   type: 'admin' | 'user'
-  phoneNumber: string
-  email: string
+  phoneNumber: string | null
+  email: string | null
+  communityIds: Array<string>
   updatedAt: string
   createdAt: string
   deleted: boolean

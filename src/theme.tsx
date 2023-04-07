@@ -4,6 +4,7 @@ import {
   ThemeConfig,
   withDefaultColorScheme,
 } from '@chakra-ui/react'
+import { MultiSelect, MultiSelectTheme } from 'chakra-multiselect'
 
 const config: ThemeConfig = {
   initialColorMode: 'light',
@@ -26,7 +27,7 @@ const colors = {
   },
 }
 const theme = extendTheme(
-  { config, colors },
+  { config, colors, components: { MultiSelect: MultiSelectTheme } },
   withDefaultColorScheme({ colorScheme: 'gray' })
 )
 export default theme

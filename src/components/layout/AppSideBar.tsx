@@ -22,6 +22,7 @@ import {
   BiWrench,
   BiLeftArrowAlt,
   BiGroup,
+  BiBook,
 } from 'react-icons/bi'
 import {
   IoChevronBack,
@@ -35,13 +36,19 @@ export interface DashboardSidebarProps extends BoxProps {
 }
 
 const getUpperMenu = (location: Location) => {
-  const adminPaths = ['admin', 'invitation', 'users']
-  if (adminPaths.some((x) => location.pathname.includes(x)))
-    return [
-      { to: '/dashboard', display: 'Back', icon: BiSubdirectoryLeft },
-      { to: '/invitation', display: 'Invites', icon: BiMailSend },
-      { to: '/users', display: 'Users', icon: BiGroup },
-    ]
+  const adminPaths = [
+    { to: '/dashboard', display: 'Back', icon: BiSubdirectoryLeft },
+    { to: '/invitation', display: 'Invites', icon: BiMailSend },
+    { to: '/users', display: 'Users', icon: BiGroup },
+    { to: '/topics', display: 'Topics', icon: BiBook },
+  ]
+  if (
+    [
+      ...adminPaths.filter((x) => x.to !== '/dashboard').map(({ to }) => to),
+      '/admin',
+    ].some((x) => location.pathname.includes(x))
+  )
+    return adminPaths
   return [{ to: '/dashboard', display: 'Dashboard', icon: BiCategory }]
 }
 
@@ -130,7 +137,13 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
         overflowY="auto"
       >
         {upperMenu.map(({ to, icon, display }) => (
-          <NavItemLink to={to} icon={icon} full={full} isLoading={isLoading}>
+          <NavItemLink
+            key={to}
+            to={to}
+            icon={icon}
+            full={full}
+            isLoading={isLoading}
+          >
             {display}
           </NavItemLink>
         ))}
@@ -168,6 +181,7 @@ const Sidebar = ({ full = false, ...props }: DashboardSidebarProps) => {
         <Divider borderColor="brand.600" />
         {lowerMenu.map(({ to, icon, display }) => (
           <NavItemLink
+            key={to}
             to={to}
             icon={icon}
             iconMargin="1"

@@ -5,5 +5,6 @@ export interface RowInterface {
 
 export interface InvitationData {
   userIds: Array<string>
+  communityIds: Array<string>
   options: Array<RowInterface>
 }

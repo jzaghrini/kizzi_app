@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 interface InvitationResponse {
   id: string
   userIds: Array<string>
+  communityIds: Array<string>
   fromDate: string
   toDate: string
   options: Array<{

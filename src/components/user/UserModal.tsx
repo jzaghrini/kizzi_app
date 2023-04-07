@@ -4,6 +4,8 @@ import {
   useCreateUserMutation,
   CreateUserRequest,
   UpdateUserRequest,
+  useCommunityQuery,
+  CommunityResponse,
 } from '../../data-access'
 import {
   Box,
@@ -23,7 +25,8 @@ import {
   Spinner,
   VStack,
 } from '@chakra-ui/react'
-import React from 'react'
+import { MultiSelect, useMultiSelect } from 'chakra-multiselect'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 interface UserModelProps {
@@ -37,6 +40,7 @@ interface UserFormProps {
   title: string
   defaultValues: CreateUserRequest
   closeModal: () => void
+  communities: Array<CommunityResponse>
 }
 const replaceObjectWithNull = (data) =>
   Object.entries(data).reduce((acc, cur) => {
@@ -49,7 +53,11 @@ const UserForm = ({
   title,
   defaultValues,
   closeModal,
+  communities,
 }: UserFormProps) => {
+  const [communityIds, setCommunityIds] = useState<Array<string>>(
+    defaultValues.communityIds
+  )
   const { mutate: createMutate, isLoading: isCreating } =
     useCreateUserMutation()
   const { mutate: updateMutate, isLoading: isUpdating } =
@@ -69,8 +77,12 @@ const UserForm = ({
     reset()
     closeModal()
   }
+  const communityLookup = communities.reduce(
+    (acc, cur) => ({ ...acc, [cur.id]: cur.name, [cur.name]: cur.id }),
+    {}
+  )
   const onSubmit = (data: CreateUserRequest) => {
-    const submitData = replaceObjectWithNull(data)
+    const submitData = replaceObjectWithNull({ ...data, communityIds })
     if (userId) {
       updateMutate(submitData as UpdateUserRequest, { onSuccess: onClose })
       return
@@ -112,6 +124,21 @@ const UserForm = ({
               })}
             />
           </FormControl>
+          <FormControl>
+            <FormLabel>Communities</FormLabel>
+            <MultiSelect
+              onChange={(e) => {
+                const ids = (e as Array<string>).map((x) => communityLookup[x])
+                setCommunityIds(ids)
+              }}
+              value={communityIds.map((name) => communityLookup[name])}
+              options={communities.map((x) => ({
+                value: x.name,
+                label: x.name,
+              }))}
+              w="full"
+            />
+          </FormControl>
         </VStack>
       </Box>
       <ModalFooter>
@@ -134,21 +161,24 @@ const UserForm = ({
   )
 }
 export const UserModal = ({ userId, isOpen, onClose }: UserModelProps) => {
-  const { data, isLoading } = useUserById(userId)
+  const { data: communities, isLoading: communitiesIsLoading } =
+    useCommunityQuery()
+  const { data, isLoading: userIsLoading } = useUserById(userId)
   const title = userId ? 'Update user' : 'Create User'
+  const isLoading = userIsLoading || communitiesIsLoading
   const defaultValues = userId
     ? data
     : {
         name: '',
         email: null,
         phoneNumber: null,
+        communityIds: [],
       }
-  console.log(data)
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        {isLoading ? (
+        {userId && isLoading ? (
           <Spinner />
         ) : (
           <UserForm
@@ -156,6 +186,7 @@ export const UserModal = ({ userId, isOpen, onClose }: UserModelProps) => {
             title={title}
             defaultValues={defaultValues}
             closeModal={onClose}
+            communities={communities}
           />
         )}
       </ModalContent>
