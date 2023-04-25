@@ -1,18 +1,5 @@
 {
   "framework": "vite",
   "buildCommand": "vite build",
-  "redirects": [
-    {
-      "source": "/dashboard",
-      "destination": "/"
-    },
-    {
-      "source": "/login",
-      "destination": "/"
-    },
-    {
-      "source": "/availability",
-      "destination": "/"
-    }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
 }
