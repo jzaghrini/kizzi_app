@@ -21,18 +21,22 @@ export interface RawRowResponse {
 }
 interface RawResponse {
   id: string
+  invitationId: string
+  invitationSlug: string
   slug: string
-  inviteId: string
   status: string
-  options: Array<RawRowResponse>
+  fromDate: string
+  toDate: string
 }
 export interface AvailabilityOptionResponse
   extends Omit<RawRowResponse, 'fromDate' | 'toDate'> {
   fromDate: Date
   toDate: Date
 }
-export interface AvailabilityResponse extends Omit<RawResponse, 'options'> {
-  options: Array<AvailabilityOptionResponse>
+export interface AvailabilityResponse
+  extends Omit<RawResponse, 'fromDate' | 'toDate'> {
+  fromDate: Date
+  toDate: Date
 }
 export const useAvailabilityByIdMutation = () => {
   const queryClient = useQueryClient()
@@ -48,28 +52,20 @@ export const useAvailabilityBySlug = (slug) => {
     queryKey: [baseKey, 'slug', slug],
     queryFn: () =>
       api
-        .get<AvailabilityResponse>(`/availability/by-slug/${slug}`)
-        .then(({ data }) => convertAvailabilityToDates(data)),
+        .get<Array<AvailabilityResponse>>(`/availability/by-slug/${slug}`)
+        .then(({ data }) => data.map(convertAvailabilityToDates)),
     enabled: !!slug,
     onError: (error) => console.log(error),
   })
 }
 
-export const useAvailabilityById = (id) =>
-  useQuery({
-    queryKey: [baseKey, 'id', id],
-    queryFn: () =>
-      api
-        .get<AvailabilityResponse>(`/availability/${id}`)
-        .then(({ data }) => convertAvailabilityToDates(data)),
-    enabled: !!id,
-    onError: (error) => console.log(error),
-  })
-
 export const useAvailabilityQuery = () => {
   return useQuery({
     queryKey: [baseKey],
-    queryFn: () => api.get('/availability/').then(({ data }) => data),
+    queryFn: () =>
+      api
+        .get<Array<AvailabilityResponse>>('/availability/')
+        .then(({ data }) => data),
     useErrorBoundary: true,
   })
 }

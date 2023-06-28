@@ -28,9 +28,20 @@ export const useCreateInvitationMutation = () => {
       queryClient.invalidateQueries([invitationKey]).then(() => data),
   })
 }
-interface UpdateInviteRequest {
+interface IdRequest {
   id: string
+}
+interface UpdateInviteRequest extends IdRequest {
   status: 'sent'
+}
+
+export const useSendInvitation = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id }: IdRequest) => api.put(`/invitation/${id}/send`),
+    onSuccess: (data) =>
+      queryClient.invalidateQueries([invitationKey]).then(() => data),
+  })
 }
 export const useUpdateInvitation = () => {
   const queryClient = useQueryClient()

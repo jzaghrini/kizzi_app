@@ -4,6 +4,7 @@ import {
   useCommunityQuery,
   useDeleteInvitation,
   useInvitationQuery,
+  useSendInvitation,
   useUpdateInvitation,
   useUsersQuery,
 } from '../data-access'
@@ -26,13 +27,18 @@ const formatDate = (dateString: string) => (
   <Text>{format(parseISO(dateString), 'PP HH:mm')}</Text>
 )
 
+const colorMapping = {
+  pending: 'gray',
+  sending: 'linkedin',
+  sent: 'blue',
+}
 export const InvitationPage = () => {
   const [inviteId, setInviteId] = useState<string | undefined>(undefined)
   const { isOpen, onClose, onOpen } = useDisclosure()
   const communityQuery = useCommunityQuery()
   const usersQuery = useUsersQuery()
   const { data, isLoading } = useInvitationQuery()
-  const { mutate: updateMutate, isLoading: isUpdating } = useUpdateInvitation()
+  const { mutate: updateMutate, isLoading: isUpdating } = useSendInvitation()
   const { mutate: deleteMutate, isLoading: isDeleting } = useDeleteInvitation()
 
   const records = (data ?? []).map((row) => ({
@@ -46,7 +52,7 @@ export const InvitationPage = () => {
     ),
   }))
   const deleteRow = (id: string) => deleteMutate(id)
-  const sendRow = (id: string) => updateMutate({ id, status: 'sent' })
+  const sendRow = (id: string) => updateMutate({ id })
   const columns = [
     {
       key: 'communities',
@@ -67,7 +73,11 @@ export const InvitationPage = () => {
     {
       key: 'status',
       display: 'Status',
-      render: (status) => <Badge>{status}</Badge>,
+      render: (status) => {
+        const color = colorMapping[status]
+        console.log(color, status)
+        return <Badge colorScheme={color}>{status}</Badge>
+      },
     },
     {
       key: 'fromDate',

@@ -18,16 +18,11 @@ import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 
 const PrivateRoute = () => {
   const token = localStorage.getItem(localStorageKey)
-  if (token) return <Navigate to="/dashboard" />
+  if (token) return <Navigate to="/availability" />
   return <Navigate to="/login" />
 }
 
 const appRoutes = [
-  {
-    path: 'dashboard',
-    element: <Dashboard />,
-    index: true,
-  },
   {
     path: 'error',
     element: <ThrowErrorPage />,
@@ -36,7 +31,12 @@ const appRoutes = [
   {
     path: 'availability',
     element: <Availability />,
+    index: true,
     errorElement: <AvailabilityError />,
+  },
+  {
+    path: 'dashboard',
+    element: <Dashboard />,
   },
   {
     path: 'invitation',

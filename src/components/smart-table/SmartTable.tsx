@@ -17,6 +17,7 @@ export const SmartTable = <T,>({
   columns,
   tableProps,
   isLoading,
+  rowActions,
   ...rest
 }: SmartTableProps<T>) => {
   if (isLoading)
@@ -30,14 +31,19 @@ export const SmartTable = <T,>({
       <Table colorScheme="gray" {...tableProps}>
         <Thead>
           <Tr>
-            {columns.map((column, index) => (
+            {columns.map((column) => (
               <Th key={column.key}>{column.display}</Th>
             ))}
           </Tr>
         </Thead>
         <Tbody>
-          {(data ?? []).map((row, index) => (
-            <Tr key={row.id}>
+          {(data ?? []).map((row) => (
+            <Tr
+              key={row.id}
+              onClick={
+                rowActions?.onClick ? () => rowActions.onClick(row) : null
+              }
+            >
               {columns.map((col) => {
                 const dataKey = col.dataKey ?? col.key
                 return (

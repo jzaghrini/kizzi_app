@@ -1,7 +1,6 @@
 import {
   AvailabilityOptionResponse,
   AvailabilityResponse,
-  useAvailabilityById,
   useAvailabilityByIdMutation,
   useAvailabilityBySlug,
   useUserById,
@@ -31,7 +30,7 @@ export const AvailabilityOptionRow = ({
 }: {
   slugs: Array<string>
   onChange: (newSlug: string) => void
-  data: AvailabilityOptionResponse
+  data: AvailabilityResponse
 }) => {
   return (
     <Box py={5}>
@@ -50,19 +49,10 @@ export const AvailabilityOptionRow = ({
     </Box>
   )
 }
-export const AvailabilityById = ({
-  slug,
-  id,
-}: {
-  slug?: string
-  id?: string
-}) => {
-  const idQuery = useAvailabilityById(id)
-  const slugQuery = useAvailabilityBySlug(slug)
+export const AvailabilityBySlug = ({ slug }: { slug: string }) => {
+  const { data, isLoading: isLoadingData } = useAvailabilityBySlug(slug)
   const { mutate, isLoading: isSaving } = useAvailabilityByIdMutation()
-  const isLoading =
-    (id && idQuery.isLoading) || (slug && slugQuery.isLoading) || isSaving
-  const data: AvailabilityResponse | undefined = idQuery.data ?? slugQuery.data
+  const isLoading = isLoadingData || isSaving
   const [slugs, setSlugs] = useState<Array<string>>([])
   const onChange = (newSlug: string) => {
     let newSlugs = [...slugs, newSlug]
@@ -76,7 +66,7 @@ export const AvailabilityById = ({
         Availability
       </Text>
       <Divider />
-      {data?.options.map((data) => (
+      {data?.map((data) => (
         <AvailabilityOptionRow
           key={data.slug}
           slugs={slugs}

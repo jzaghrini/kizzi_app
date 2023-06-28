@@ -7,9 +7,13 @@ export interface ColumnDisplay<T> {
   dataKey?: string
   render?: (element: any, row: T) => ReactNode
 }
+interface RowActions<T> {
+  onClick: (row: T) => void
+}
 export interface SmartTableProps<T> extends TableContainerProps {
   data?: Array<T & { id: string }>
   columns: Array<ColumnDisplay<T>>
+  rowActions?: RowActions<T>
   tableProps?: TableProps
   isLoading: boolean
 }
